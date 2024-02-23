@@ -50,7 +50,6 @@ class gramPrintListener(gramListener):
             self.trans.append((dep,ids[i],weights[i],False, None)) #(depart,arrivée,weight,choice,action)
         #print("Entrée dans Transnoact")
         #print("Transition from " + dep + " with no action and targets " + str(ids) + " with weights " + str(weights))
-        #print(self.trans)
     
     def possible_choices(self, state : str)  :
         ''' Retourne les transitions possibles pour un état donné'''
