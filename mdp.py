@@ -14,6 +14,7 @@ class gramPrintListener(gramListener):
         self.trans = []
         self.current_state = None 
         self.previous_state = None 
+        self.choice = None
         # La clé serait l'état dans lequel on est + le choix et la valeur associée : liste de tuples vers l'état d'arrivée et le poids associé
         pass
 
@@ -95,6 +96,9 @@ class gramPrintListener(gramListener):
                     print(f"tuple : {tuple}")
                     weight += tuple[1]
                     if x <= (weight/total_weight) :
+                        self.previous_state = self.current_state
+                        self.current_state = tuple[0]
+                        self.choice = action_choisie
                         return tuple[0]
 
 
