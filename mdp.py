@@ -12,6 +12,8 @@ class gramPrintListener(gramListener):
         self.states = []
         self.actions = []
         self.trans = []
+        self.current_state = None 
+        self.previous_state = None 
         # La clé serait l'état dans lequel on est + le choix et la valeur associée : liste de tuples vers l'état d'arrivée et le poids associé
         pass
 
@@ -53,6 +55,16 @@ class gramPrintListener(gramListener):
     
     def possible_choices(self, state : str)  :
         ''' Retourne les transitions possibles pour un état donné'''
+        choices = None
+        for transition in self.trans :
+            if transition[0] == state and transition[-1] != None :
+                if choices == None:
+                    choices = []
+                choices.append( transition[-1]) # (Arrivée, Poids, Choix (None si pas de choix))
+        return choices
+    
+    def possible_trans(self, state : str)  :
+        ''' Retourne les transitions possibles pour un état donné'''
         choices = []
         for transition in self.trans :
             if transition[0] == state :
@@ -61,41 +73,28 @@ class gramPrintListener(gramListener):
     
     def etat_suivant(self, state_ini : str, action_choisie : str) :
         if action_choisie == None :
-            total_weight = sum(t[1] for t in self.possible_choices(state_ini) if t[-1] == None)
+            total_weight = sum(t[1] for t in self.possible_trans(state_ini) if t[-1] == None)
             print(f"Total_weight : {total_weight}")
             weight = 0 
             x = random.uniform(0,1)
             print(f"x : {x}")
-            for tuple in self.possible_choices(state_ini) :
+            for tuple in self.possible_trans(state_ini) :
                 weight += tuple[1]
                 if x <= (weight/total_weight) :
+                   self.previous_state = self.current_state
+                   self.current_state = tuple[0]
                    return tuple[0]
         else :
-            total_weight = sum(t[1] for t in self.possible_choices(state_ini) if t[-1] == action_choisie)
+            total_weight = sum(t[1] for t in self.possible_trans(state_ini) if t[-1] == action_choisie)
             print(f"Total_weight : {total_weight}")
             weight = 0 
             x = random.uniform(0,1)
             print(f"x : {x}")
-            for tuple in self.possible_choices(state_ini) :
+            for tuple in self.possible_trans(state_ini) :
                 if tuple[-1] == action_choisie :
                     print(f"tuple : {tuple}")
                     weight += tuple[1]
                     if x <= (weight/total_weight) :
                         return tuple[0]
 
-def main():
-    lexer = gramLexer(StdinStream())
-    # lexer = gramLexer(FileStream("ex.mdp")) pour éviter d'écrirer le < ex.mdp
-    stream = CommonTokenStream(lexer)
-    parser = gramParser(stream)
-    tree = parser.program()
-    printer = gramPrintListener()
-    walker = ParseTreeWalker()
-    walker.walk(printer, tree)
-    print(printer.trans)
-    print("Choix possibles pour S1")
-    print(printer.possible_choices('S1'))
-    print(printer.etat_suivant('S1', 'a'))
 
-if __name__ == '__main__':
-    main()

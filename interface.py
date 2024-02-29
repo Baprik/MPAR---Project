@@ -26,14 +26,18 @@ def create_edges(G, etats, liste_x,etat_actuel,save_file):
     nx.draw_networkx_nodes(G, pos, nodelist=nodes_inter, node_shape='o', node_color='black', node_size=50)
     nx.draw_networkx_nodes(G, pos, nodelist=[current_state], node_shape='o', node_color='red', node_size=300)
 
-    nx.draw_networkx_edges(G, pos, arrows=True, arrowstyle='->', connectionstyle = 'arc3, rad = 0.1')
-    print(G)
-    print(nodes_inter)
-    print(etats)
-    #print()
-    nx.draw_networkx_labels(G, pos, labels=nodes_label, font_size=10, font_color='black', font_weight='bold')
+    curved_edges = [edge for edge in G.edges() if reversed(edge) in G.edges()]
+    straight_edges = list(set(G.edges()) - set(curved_edges))
+    arc_rad = 0.25
+    
+    nx.draw_networkx_edges(G, pos, edgelist=straight_edges)
+    nx.draw_networkx_edges(G, pos, edgelist=curved_edges, connectionstyle=f'arc3, rad = {arc_rad}')
+    
+    #nx.draw_networkx_edges(G, pos, arrows=True, arrowstyle='->', connectionstyle = 'arc3, rad = 0.3')
 
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_label)
+    nx.draw_networkx_labels(G, pos, labels=nodes_label, font_size=10, font_color='black', font_weight='bold')
+    
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_label, label_pos = 0.7)
 
     plt.title("")
     if save_file:
@@ -147,12 +151,14 @@ class MainWindow(tk.Toplevel):
                 self.printer.current_state = self.printer.etat_suivant(self.printer.current_state,choix)
                 init_grap(self.printer.states, self.printer.trans, self.printer.current_state, save_file = True)
                 self.show_image("plot.png")
+                self.input_entry.delete(0, tk.END) 
             
 
 
 
 def launch_interface(printer : mdp.gramPrintListener ):
     init_grap(printer.states, printer.trans, printer.current_state, save_file = True)
+    
     app = MainWindow(printer)
     app.mainloop()
 
