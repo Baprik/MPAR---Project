@@ -55,7 +55,7 @@ class gramPrintListener(gramListener):
         #print("Transition from " + dep + " with no action and targets " + str(ids) + " with weights " + str(weights))
     
     def possible_choices(self, state : str)  :
-        ''' Retourne les transitions possibles pour un état donné'''
+        ''' Retourne les choix possibles pour un état donné'''
         choices = None
         for transition in self.trans :
             if transition[0] == state and transition[-1] != None :
