@@ -7,12 +7,12 @@ import mdp
 import my_networkx as my_nx
 
 
-def init_grap(etats, liste_x,etat_actuel,previous_state,choice, save_file = False):
+def init_grap(etats, liste_x, etat_actuel, previous_state, choice, save_file = False):
     G = nx.DiGraph(directed=True)
     G.add_nodes_from(etats)
-    create_edges(G, etats, liste_x,etat_actuel,previous_state, choice, save_file)
+    create_edges(G, etats, liste_x, etat_actuel, previous_state, choice, save_file)
 
-def create_edges(G, etats, liste_x,etat_actuel, previous_state,choice, save_file):
+def create_edges(G, etats, liste_x, etat_actuel, previous_state,choice, save_file):
     nodes_label = {}
     edge_label ={}
     nodes_inter = []
@@ -23,12 +23,12 @@ def create_edges(G, etats, liste_x,etat_actuel, previous_state,choice, save_file
 
     pos = nx.spectral_layout(G)
     # Tracé du graphe
-    nx.draw_networkx_nodes(G, pos, nodelist=etats, node_shape='o', node_color='skyblue', node_size=300)
+    nx.draw_networkx_nodes(G, pos, nodelist=etats, node_shape='o', node_color='skyblue', node_size=200)
     nx.draw_networkx_nodes(G, pos, nodelist=nodes_inter, node_shape='o', node_color='black', node_size=50)
     if previous_state != None:
-        nx.draw_networkx_nodes(G, pos, nodelist=[previous_state], node_shape='o', node_color='orange', node_size=300)
+        nx.draw_networkx_nodes(G, pos, nodelist=[previous_state], node_shape='o', node_color='orange', node_size=200)
     
-    nx.draw_networkx_nodes(G, pos, nodelist=[current_state], node_shape='o', node_color='red', node_size=300)
+    nx.draw_networkx_nodes(G, pos, nodelist=[current_state], node_shape='o', node_color='red', node_size=200)
     
     curved_edges = [edge for edge in G.edges() if reversed(edge) in G.edges()]
     straight_edges = list(set(G.edges()) - set(curved_edges))
@@ -36,16 +36,12 @@ def create_edges(G, etats, liste_x,etat_actuel, previous_state,choice, save_file
     
     nx.draw_networkx_edges(G, pos, edgelist=straight_edges)
     nx.draw_networkx_edges(G, pos, edgelist=curved_edges, connectionstyle=f'arc3, rad = {arc_rad}')
-    print(f"{straight_edges=}")
-    print(f"{curved_edges=}")
+    #print(f"{straight_edges=}")
+    #print(f"{curved_edges=}")
     nx.draw_networkx_labels(G, pos, labels=nodes_label, font_size=10, font_color='black', font_weight='bold')
     
     ### MISE EN COULEUR DES EDGES DE PASSAGE
     color_edge_path(G, pos, straight_edges, curved_edges,arc_rad,current_state,previous_state, choice )
-    
-        
-    
-        
 
     curved_edge_labels = {edge: edge_label[edge] for edge in curved_edges if edge in edge_label}
     straight_edge_labels = {edge: edge_label[edge] for edge in straight_edges if edge in edge_label}
@@ -139,7 +135,7 @@ class MainWindow(tk.Toplevel):
         self.text_label.pack(padx=10, pady=10)
 
         # Partie pour entrer du texte manuellement
-        self.input_entry = ttk.Entry(self.input_frame, width=40)
+        self.input_entry = ttk.Entry(self.input_frame, width=80)
         self.input_entry.pack(padx=10, pady=10)
         self.input_entry.bind("<Return>", self.on_enter_pressed)
 
@@ -148,8 +144,8 @@ class MainWindow(tk.Toplevel):
             # Charger l'image
             image = Image.open(file_path)
             # Redimensionner si nécessaire
-            max_size = (2500, 2500)
-            image.thumbnail(max_size, Image.ANTIALIAS)
+            max_size = (12500, 2500)
+            image.thumbnail(max_size)
             # Convertir l'image pour tkinter
 
             self.tk_image = ImageTk.PhotoImage(image)
