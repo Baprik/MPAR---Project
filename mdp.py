@@ -40,7 +40,6 @@ class gramPrintListener(gramListener):
                 raise StateError(f"L'état {tuple[0]} dans la transition n'a pas été préalablement déclaré")
             if tuple[1] not in self.states:
                 raise StateError(f"L'état {tuple[1]} dans la transition n'a pas été préalablement déclaré")
-
     
     def raiseErreur_action(self) :
         for tuple in self.trans :
@@ -53,7 +52,7 @@ class gramPrintListener(gramListener):
             if tuple[2] <= 0 :
                 raise ValueError(f"Le poids associé à la transition de {tuple[0]} à {tuple[1]} ne peut pas être négatif ou nul")
     
-    def raiseErreurDecisionMarkovien(self) :
+    def raiseErreur_DecisionMarkovien(self) :
         for tuple in self.trans :
             if tuple[-1] != None and tuple[0] not in self.states_decision :
                 self.states_decision.append(tuple[0])
@@ -63,11 +62,22 @@ class gramPrintListener(gramListener):
             if state in self.states_non_dec :
                 raise MarkovError(f"L'état {state} ne peut pas mélanger une transition avec action et sans action")
     
+    def raiseErreur_doublons(self) :
+        for tuple1 in self.trans :
+            for tuple2 in self.trans :
+                if tuple1 != tuple2 and tuple1[-1] == None :
+                    if tuple1[0] == tuple2[0] and tuple1[1] == tuple2[1] :
+                        raise MarkovError(f"Il y a plusieurs transitions indiqués allant de {tuple1[0]} à {tuple1[1]}, merci de bien vouloir l'indiquer en une seule et même ligne")
+                if tuple1 != tuple2 and tuple1[-1] != None and tuple1[-1] == tuple2[-1] : # Cas où on a plusieurs actions qui mènent au même point
+                    if tuple1[0] == tuple2[0] and tuple1[1] == tuple2[1] :
+                        raise MarkovError(f"Il y a plusieurs transitions indiqués allant de {tuple1[0]} à {tuple1[1]}, merci de bien vouloir l'indiquer en une seule et même ligne")
+    
     def raiseErreurs(self) :
         self.raiseErreur_action()
         self.raiseErreur_state()
-        self.raiseErreurDecisionMarkovien()
         self.raiseErreur_poids()
+        self.raiseErreur_DecisionMarkovien()
+        self.raiseErreur_doublons()
 
     def enterDefstates(self, ctx):
         self.states = [str(x) for x in ctx.ID()]
