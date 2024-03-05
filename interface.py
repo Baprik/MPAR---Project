@@ -7,12 +7,12 @@ import mdp
 import my_networkx as my_nx
 
 
-def init_grap(etats, liste_x, etat_actuel, previous_state, choice, save_file = False):
+def init_grap(etats, liste_x, etat_actuel, previous_state, choice, save_file = False, altPos = 0):
     G = nx.DiGraph(directed=True)
     G.add_nodes_from(etats)
-    create_edges(G, etats, liste_x, etat_actuel, previous_state, choice, save_file)
+    create_edges(G, etats, liste_x, etat_actuel, previous_state, choice, save_file, altPos)
 
-def create_edges(G, etats, liste_x, etat_actuel, previous_state,choice, save_file):
+def create_edges(G, etats, liste_x, etat_actuel, previous_state,choice, save_file, altPos = 0 ):
     nodes_label = {}
     edge_label ={}
     nodes_inter = []
@@ -21,7 +21,21 @@ def create_edges(G, etats, liste_x, etat_actuel, previous_state,choice, save_fil
     for x in liste_x:
         create_edge(G, x, nodes_label, edge_label,nodes_inter)
 
-    pos = nx.spectral_layout(G)
+    plt.clf()
+
+    if altPos == 0: 
+        pos = nx.spectral_layout(G)
+
+    elif altPos == 1: 
+        pos = nx.kamada_kawai_layout(G)
+    elif altPos == 2:
+        pos = nx.spring_layout(G)
+    elif altPos == 3:
+        pos = nx.planar_layout(G)
+    elif altPos == 4:
+        pos = nx.fruchterman_reingold_layout(G)
+    else :
+        pos = nx.spectral_layout(G)
     # Tracé du graphe
     nx.draw_networkx_nodes(G, pos, nodelist=etats, node_shape='o', node_color='skyblue', node_size=200)
     nx.draw_networkx_nodes(G, pos, nodelist=nodes_inter, node_shape='o', node_color='black', node_size=50)
@@ -45,7 +59,7 @@ def create_edges(G, etats, liste_x, etat_actuel, previous_state,choice, save_fil
 
     curved_edge_labels = {edge: edge_label[edge] for edge in curved_edges if edge in edge_label}
     straight_edge_labels = {edge: edge_label[edge] for edge in straight_edges if edge in edge_label}
-    my_nx.my_draw_networkx_edge_labels(G, pos, edge_labels=curved_edge_labels,rotate=False,rad = arc_rad,  label_pos = 0.7)
+    my_nx.my_draw_networkx_edge_labels(G, pos, edge_labels=curved_edge_labels,rotate=False,rad = arc_rad,  label_pos = 0.8)
     nx.draw_networkx_edge_labels(G, pos, edge_labels=straight_edge_labels,rotate=False , label_pos = 0.7)
 
     plt.title("")
@@ -60,7 +74,7 @@ def color_edge_path(G, pos, straight_edges, curved_edges,arc_rad,current_state,p
         if (previous_state, current_state) in straight_edges:
             nx.draw_networkx_edges(G, pos, edgelist=[(previous_state, current_state)],edge_color = "orange")
         elif (previous_state, current_state) in curved_edges:
-            nx.draw_networkx_edges(G, pos, edgelist=curved_edges, connectionstyle=f'arc3, rad = {arc_rad}',edge_color = "orange")
+            nx.draw_networkx_edges(G, pos, edgelist=[(previous_state, current_state)], connectionstyle=f'arc3, rad = {arc_rad}',edge_color = "orange")
         elif choice != None: 
             if (previous_state, previous_state+choice) in straight_edges:
                 nx.draw_networkx_edges(G, pos, edgelist=[ (previous_state, previous_state+choice)],edge_color = "orange")
@@ -105,6 +119,7 @@ def create_edge(G : nx.DiGraph,x, nodes_label, edge_label,nodes_inter):
 class MainWindow(tk.Toplevel):
     def __init__(self,printer : mdp.gramListener):
         super().__init__()
+        self.altPos = 0 
         self.printer = printer
 
         
@@ -139,6 +154,15 @@ class MainWindow(tk.Toplevel):
         self.input_entry.pack(padx=10, pady=10)
         self.input_entry.bind("<Return>", self.on_enter_pressed)
 
+        # Partie pour choisir altPos
+        self.altPos_label = ttk.Label(self.input_frame, text="Choisir une position alternative:")
+        self.altPos_label.pack(padx=10, pady=(0, 5))
+
+        self.altPos_combobox = ttk.Combobox(self.input_frame, values=list(range(6)))
+        self.altPos_combobox.pack(padx=10, pady=(0, 10))
+        self.altPos_combobox.bind("<<ComboboxSelected>>", self.on_altPos_changed)
+
+
     def show_image(self, file_path):
         try:
             # Charger l'image
@@ -159,12 +183,13 @@ class MainWindow(tk.Toplevel):
     def on_enter_pressed(self, event):
         choix = self.input_entry.get()
         choix_possible = self.printer.possible_choices(self.printer.current_state)
+        userGetFalse = False 
         if choix_possible == None: 
             new_text = "Presser 'Enter' pour continuer le parcours"
             print(new_text)
             self.text_label.config(text=new_text) 
             self.printer.current_state = self.printer.etat_suivant(self.printer.current_state,choix_possible)
-            init_grap(self.printer.states, self.printer.trans, self.printer.current_state,self.printer.previous_state,self.printer.choice, save_file = True)
+            init_grap(self.printer.states, self.printer.trans, self.printer.current_state,self.printer.previous_state,self.printer.choice, save_file = True, altPos=self.altPos)
             self.show_image("plot.png")
             
             
@@ -174,13 +199,31 @@ class MainWindow(tk.Toplevel):
                 print(new_text)
                 self.text_label.config(text=new_text)
                 self.input_entry.delete(0, tk.END)  # Efface le texte saisi
+                userGetFalse = True 
             else: 
             
                 #parcours le graphe + on actu l'état courrant 
                 self.printer.current_state = self.printer.etat_suivant(self.printer.current_state,choix)
-                init_grap(self.printer.states, self.printer.trans, self.printer.current_state, self.printer.previous_state,self.printer.choice,save_file = True)
+                init_grap(self.printer.states, self.printer.trans, self.printer.current_state, self.printer.previous_state,self.printer.choice,save_file = True, altPos=self.altPos)
                 self.show_image("plot.png")
                 self.input_entry.delete(0, tk.END) 
+        choix_possible = self.printer.possible_choices(self.printer.current_state)
+        if choix_possible == None: 
+            new_text = "Presser 'Enter' pour continuer le parcours"
+            print(new_text)
+            self.text_label.config(text=new_text) 
+        elif not userGetFalse :
+            new_text = "Voici la liste des choix possibles: " + str(set(choix_possible))
+            print(new_text)
+            self.text_label.config(text=new_text)
+
+    def on_altPos_changed(self, event):
+        self.altPos = int(self.altPos_combobox.get())
+        print("altPos updated to:", self.altPos)
+        init_grap(self.printer.states, self.printer.trans, self.printer.current_state, self.printer.previous_state,self.printer.choice,save_file = True, altPos=self.altPos)
+        self.show_image("plot.png")
+
+        
             
 
 
