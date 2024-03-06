@@ -9,7 +9,7 @@ from mdp import gramPrintListener
 
 def main():
     #lexer = gramLexer(StdinStream())
-    lexer = gramLexer(FileStream("ex2.mdp")) #pour éviter d'écrirer le < ex.mdp
+    lexer = gramLexer(FileStream("simu-mdp.mdp")) #pour éviter d'écrirer le < ex.mdp
     stream = CommonTokenStream(lexer)
     parser = gramParser(stream)
     tree = parser.program()
