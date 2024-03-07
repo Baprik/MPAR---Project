@@ -3,3 +3,4 @@ Warning à la place de Erreur
 Plus d'info dans le terminal (trace courrante)
 Aggrandir l'image en pleine écran 
 Essayer de retirer le coté random de certaines positions 
+Argument à mettre en parser 
