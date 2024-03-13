@@ -4,3 +4,5 @@ Plus d'info dans le terminal (trace courrante)
 Aggrandir l'image en pleine écran 
 Essayer de retirer le coté random de certaines positions 
 Argument à mettre en parser 
+
+Mettre une fonction state with reward et state without reward comme pour les fonctions
