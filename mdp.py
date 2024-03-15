@@ -150,5 +150,33 @@ class gramPrintListener(gramListener):
                         print(f"Etat actuel : {tuple[0]}")
                         self.choice = action_choisie
                         return tuple[0]
+    
+    def return_proba(self, S1,S2, action = None) -> float:
+        total_weight = sum(t[1] for t in self.possible_trans(S1) if t[-1] == action)
+        for tran in self.trans:
+            if tran[0] == S1 and tran[1] == S2 and tran[4] == action:
+                return tran[2]/total_weight
+        return 0 
+    
+    def create_adv(self, is_random = False):
+        adv = {}
+        if is_random:
+            for state in self.states:
+                choices = self.possible_choices(state)
+                if choices == None:
+                    adv[state] = None
+                else:
+                    choice = random.choice(choices)
+                    adv[state] = choice
+        else:
+            for state in self.states:
+                choices = self.possible_choices(state)
+                choice = None
+                adv[state] = choice
+                while choices != None and choice not in choices:
+                    choice = input(f"Choisissez le choic pour votre adversaire à l'état {state} parmis les choix {set(choices)}.")
+                    adv[state] = choice
+        return adv
+
 
 

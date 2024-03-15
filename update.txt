@@ -1,8 +1,14 @@
+TP1:
 Afficher Trace 
 Warning à la place de Erreur 
 Plus d'info dans le terminal (trace courrante)
 Aggrandir l'image en pleine écran 
 Essayer de retirer le coté random de certaines positions 
 Argument à mettre en parser 
-
 Mettre une fonction state with reward et state without reward comme pour les fonctions
+
+TP2: 
+Implémenter montecarlo pour calc proba d'atteindre un état (ou ensemble d'états).
+Algo pour calc espérance d'une fonction de récompense donnée
+Algo stat pour prob d'accessibilité 
+Algo de RL -> Q-learning 
