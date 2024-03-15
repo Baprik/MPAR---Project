@@ -1,6 +1,7 @@
 from mdp import gramPrintListener
 import numpy as np 
 from copy import deepcopy
+from math import log
 
 def PCTL(gram : gramPrintListener, iter : int, S0 : list, S1 : list,adv : dict = {}) -> dict:
     n_states = len(gram.states)
@@ -44,6 +45,24 @@ def best_adv_for_PCTL(gram : gramPrintListener, iter, S0, S1, target):
             best_adv = adv 
     return (best_adv, y)
 
+def monteCarloStat(gram : gramPrintListener, nb_coup, iter_MC, current_state, target_state,adv):
+    access = 0 
+    for _ in range(iter_MC):
+        gram.current_state = current_state
+        access += gram.access(target_state,nb_coup,adv)
+    return access/iter_MC
+
+def best_adv_for_MC(gram :gramPrintListener, nb_coup, current_state, target_state, precision = 0.01, erreur = 0.01):
+    iter_mc = int(round((log(2) - log(erreur))/(2*precision)**2))
+    y = 0
+    best_adv = {}
+    liste_adv = gram.liste_adv_possible()
+    for adv in liste_adv:
+        y_ = monteCarloStat(gram,nb_coup, iter_mc, current_state, target_state, adv)
+        if y_ > y:
+            y= y_
+            best_adv = adv 
+    return (best_adv, y)
 
 
 

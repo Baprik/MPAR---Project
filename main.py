@@ -4,7 +4,7 @@ from gramListener import gramListener
 from gramParser import gramParser
 from interface import launch_interface
 from mdp import gramPrintListener
-from tools import PCTL, best_adv_for_PCTL
+from tools import PCTL, best_adv_for_PCTL, monteCarloStat, best_adv_for_MC
 
 
 
@@ -22,6 +22,7 @@ def main():
     print(printer.trans)
     
     print(best_adv_for_PCTL(printer, 10, ['S4'], [], 'S0'))
+    print(best_adv_for_MC(printer, 10,'S0','S4'))
     #launch_interface(printer)
     print()
     

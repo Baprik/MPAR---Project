@@ -128,26 +128,26 @@ class gramPrintListener(gramListener):
             total_weight = sum(t[1] for t in self.possible_trans(state_ini) if t[-1] == None)
             weight = 0 
             x = random.uniform(0,1)
-            print(f"x : {x}")
+            #print(f"x : {x}")
             for tuple in self.possible_trans(state_ini) :
                 weight += tuple[1]
                 if x <= (weight/total_weight) :
                    self.previous_state = self.current_state
                    self.current_state = tuple[0]
-                   print(f"Etat actuel : {tuple[0]}")
+                   #print(f"Etat actuel : {tuple[0]}")
                    return tuple[0]
         else :
             total_weight = sum(t[1] for t in self.possible_trans(state_ini) if t[-1] == action_choisie)
             weight = 0 
             x = random.uniform(0,1)
-            print(f"x : {x}")
+            #print(f"x : {x}")
             for tuple in self.possible_trans(state_ini) :
                 if tuple[-1] == action_choisie :
                     weight += tuple[1]
                     if x <= (weight/total_weight) :
                         self.previous_state = self.current_state
                         self.current_state = tuple[0]
-                        print(f"Etat actuel : {tuple[0]}")
+                        #print(f"Etat actuel : {tuple[0]}")
                         self.choice = action_choisie
                         return tuple[0]
     
@@ -191,5 +191,13 @@ class gramPrintListener(gramListener):
                 liste_adv.append(new_adv)
         return liste_adv
 
-
+    def access(self, state_target, nb_coup, adv):
+        k = 0 
+        while k < nb_coup:
+            k += 1
+            self.etat_suivant(self.current_state,adv[self.current_state])
+            if self.current_state == state_target:
+                return 1 
+        
+        return 0 
 
