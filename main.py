@@ -4,7 +4,7 @@ from gramListener import gramListener
 from gramParser import gramParser
 from interface import launch_interface
 from mdp import gramPrintListener
-from tools import PCTL
+from tools import PCTL, best_adv_for_PCTL
 
 
 
@@ -20,12 +20,10 @@ def main():
     printer.current_state = printer.states[0]
     printer.raiseErreurs()
     print(printer.trans)
-    #print(printer.return_proba('S11','S22','a'))
     
-    adv = printer.create_adv(is_random=False)
-    print(f'{adv=}')
-    print(PCTL(printer, 10, ['S4'], [], adv))
+    print(best_adv_for_PCTL(printer, 10, ['S4'], [], 'S0'))
     #launch_interface(printer)
+    print()
     
 
 if __name__ == '__main__':

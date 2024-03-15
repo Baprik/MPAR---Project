@@ -177,6 +177,19 @@ class gramPrintListener(gramListener):
                     choice = input(f"Choisissez le choic pour votre adversaire à l'état {state} parmis les choix {set(choices)}.")
                     adv[state] = choice
         return adv
+    
+    def liste_adv_possible(self, n = 100):
+        liste_adv = []
+        for _ in range(n):
+            is_in = False
+            new_adv = self.create_adv(is_random= True)
+            for adv in liste_adv:
+                if adv == new_adv:
+                    is_in =True
+                    break
+            if not is_in:
+                liste_adv.append(new_adv)
+        return liste_adv
 
 
 

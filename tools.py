@@ -33,6 +33,17 @@ def PCTL(gram : gramPrintListener, iter : int, S0 : list, S1 : list,adv : dict =
 
     return y_dic
 
+def best_adv_for_PCTL(gram : gramPrintListener, iter, S0, S1, target):
+    y = 0
+    best_adv = {}
+    liste_adv = gram.liste_adv_possible()
+    for adv in liste_adv:
+        y_ = PCTL(gram, iter, S0, S1, adv)[target]
+        if y_ > y:
+            y= y_
+            best_adv = adv 
+    return (best_adv, y)
+
 
 
 
