@@ -1,7 +1,7 @@
 from mdp import gramPrintListener
 import numpy as np 
 from copy import deepcopy
-from math import log
+from math import log, log10
 
 def PCTL(gram : gramPrintListener, iter : int, S0 : list, S1 : list,adv : dict = {}) -> dict:
     n_states = len(gram.states)
@@ -64,7 +64,55 @@ def best_adv_for_MC(gram :gramPrintListener, nb_coup, current_state, target_stat
             best_adv = adv 
     return (best_adv, y)
 
+def SPRT(p,eps,model : gramPrintListener,current_state ,target_state , adv ,nb_coup, alpha = 0.01, beta = 0.01):
+    A = (1- beta)/alpha
+    B = beta/ (1 - alpha)
+    inf = p - eps
+    sup = p + eps
+    dm = 0
+    m = 0 
+    Rm = 1
+    m +=1
+    if model.access(target_state, nb_coup, adv) == 1:
+        dm += 1
+        Rm *= inf/sup
+    else:
+        Rm *= (1-inf)/(1-sup)
+    while Rm < A and Rm > B:
+        model.current_state = current_state
+        m +=1
+        if model.access(target_state, nb_coup, adv) == 1:
+            dm += 1
+            Rm *= inf/sup
+        else:
+            Rm *= (1-inf)/(1-sup)
+    if Rm > A :
+        print(f"proba < {round(inf, int(abs(log10(eps))))}")
+    if Rm < B:
+        print(f"proba > {round(sup, int(abs(log10(eps))))}")
 
 
+def Qlearning(Tmax, model : gramPrintListener, gamma, alpha):
+    #Initialize(Q0)
+    Q = {X : model.reward[X[0]] for X in model.states}
+    for t in range(Tmax):
+        print(f"Liste action: {model.states}")
+        s = input()
+        if model.possible_choices(s) == None :
+            a = None
+        else:
+            print(f"Liste action: {set(model.possible_choices(s))}")
+            a = input()
+        model.current_state = s
+        s_ = model.etat_suivant(s,a)
+        r = model.reward[s_]
+        choices_possibles =  model.possible_choices(s_)
+        if choices_possibles == None:
+            choices_possibles = [None]
+        delta = r + gamma * max([Q[(s_,b)] for b in choices_possibles]) - Q[(s,a)]
+        Q[(s,a)] = Q[(s,a)] + alpha(t)* delta 
+    return Q
 
+def inv(k):
+    return 1/(k+1)
 
