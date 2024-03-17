@@ -10,7 +10,7 @@ from tools import PCTL, best_adv_for_PCTL
 
 def main():
     #lexer = gramLexer(StdinStream())
-    lexer = gramLexer(FileStream("ex2.mdp")) #pour éviter d'écrirer le < ex.mdp
+    lexer = gramLexer(FileStream("ex.mdp")) #pour éviter d'écrirer le < ex.mdp
     stream = CommonTokenStream(lexer)
     parser = gramParser(stream)
     tree = parser.program()
@@ -18,8 +18,9 @@ def main():
     walker = ParseTreeWalker()
     walker.walk(printer, tree)
     printer.current_state = printer.states[0]
+    print(printer.states)
     printer.raiseErreurs()
-    print(printer.trans)
+    #print(printer.trans)
     
     print(best_adv_for_PCTL(printer, 10, ['S4'], [], 'S0'))
     #launch_interface(printer)

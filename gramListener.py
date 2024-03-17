@@ -1,4 +1,4 @@
-# Generated from gram.g4 by ANTLR 4.11.1
+# Generated from gram.g4 by ANTLR 4.7.2
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .gramParser import gramParser
@@ -23,6 +23,24 @@ class gramListener(ParseTreeListener):
 
     # Exit a parse tree produced by gramParser#defstates.
     def exitDefstates(self, ctx:gramParser.DefstatesContext):
+        pass
+
+
+    # Enter a parse tree produced by gramParser#statenorew.
+    def enterStatenorew(self, ctx:gramParser.StatenorewContext):
+        pass
+
+    # Exit a parse tree produced by gramParser#statenorew.
+    def exitStatenorew(self, ctx:gramParser.StatenorewContext):
+        pass
+
+
+    # Enter a parse tree produced by gramParser#staterew.
+    def enterStaterew(self, ctx:gramParser.StaterewContext):
+        pass
+
+    # Exit a parse tree produced by gramParser#staterew.
+    def exitStaterew(self, ctx:gramParser.StaterewContext):
         pass
 
 
@@ -71,5 +89,3 @@ class gramListener(ParseTreeListener):
         pass
 
 
-
-del gramParser
