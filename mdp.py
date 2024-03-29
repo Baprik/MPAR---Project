@@ -185,7 +185,7 @@ class gramPrintListener(gramListener):
                 choice = None
                 adv[state] = choice
                 while choices != None and choice not in choices:
-                    choice = input(f"Choisissez le choic pour votre adversaire à l'état {state} parmis les choix {set(choices)}.")
+                    choice = input(f"Choisissez le choix pour votre adversaire à l'état {state} parmis les choix {set(choices)}.")
                     adv[state] = choice
         return adv
     
