@@ -52,7 +52,7 @@ def monteCarloStat(gram : gramPrintListener, nb_coup, iter_MC, current_state, ta
         access += gram.access(target_state,nb_coup,adv)
     return access/iter_MC
 
-def best_adv_for_MC(gram :gramPrintListener, nb_coup, current_state, target_state, precision = 0.01, erreur = 0.01):
+def best_adv_for_MC(gram :gramPrintListener, nb_coup : int, current_state : str, target_state : str, precision = 0.01, erreur = 0.01) -> tuple[dict, float]:
     iter_mc = int(round((log(2) - log(erreur))/(2*precision)**2))
     y = 0
     best_adv = {}
@@ -64,7 +64,7 @@ def best_adv_for_MC(gram :gramPrintListener, nb_coup, current_state, target_stat
             best_adv = adv 
     return (best_adv, y)
 
-def SPRT(p,eps,model : gramPrintListener,current_state ,target_state , adv ,nb_coup, alpha = 0.01, beta = 0.01):
+def SPRT(p : float,eps : float,model : gramPrintListener,current_state :str ,target_state : str, adv : dict,nb_coup :int, alpha = 0.01, beta = 0.01) -> None:
     A = (1- beta)/alpha
     B = beta/ (1 - alpha)
     inf = p - eps
@@ -92,7 +92,7 @@ def SPRT(p,eps,model : gramPrintListener,current_state ,target_state , adv ,nb_c
         print(f"proba > {round(sup, int(abs(log10(eps))))}")
 
 
-def Qlearning(Tmax, model : gramPrintListener, gamma, alpha):
+def Qlearning(Tmax: int, model: gramPrintListener, gamma: float, alpha) -> dict:
     #Initialize(Q0)
     Q = {}
     for state in model.states:
@@ -130,7 +130,6 @@ def Qlearning(Tmax, model : gramPrintListener, gamma, alpha):
             choices_possibles = [None]
         delta = r + gamma * max([Q[(s_,b)] for b in choices_possibles]) - Q[(s,a)]
         Q[(s,a)] = Q[(s,a)] + alpha(t)* delta 
-        print(Q)
     return Q
 
 def QlearningAuto(Tmax, model : gramPrintListener, gamma, alpha):
@@ -168,6 +167,7 @@ def QlearningAuto(Tmax, model : gramPrintListener, gamma, alpha):
         delta = r + gamma * max([Q[(s_,b)] for b in choices_possibles]) - Q[(s,a)]
         Q[(s,a)] = Q[(s,a)] + alpha(t)* delta 
         s = s_
+    print(f"{apprentissage=}")
     return Q
 
 def inv(k):

@@ -24,11 +24,15 @@ def main(name, analyse):
     printer.raiseErreurs()
     print(printer.rewards)
     if analyse:
+        
         print(f"Le meilleur adversaire selon PCTL :{best_adv_for_PCTL(printer, 10, ['S4'], [], 'S0')}")
-        print(f"Le meilleur adversaire selon PCTL :{best_adv_for_MC(printer, 10,'S0','S4')}")
-        adv = printer.create_adv()
-        SPRT(0.1,0.01,printer,"S0" ,"S4" , adv ,100)
+        print(f"Le meilleur adversaire selon MC :{best_adv_for_MC(printer, 10,'S0','S4')}")
+        #adv = printer.create_adv()
+        #SPRT(0.2,0.1,printer,"S0" ,"S4" , adv ,10)
         print(f"Le Q obtenue est: {QlearningAuto(100, printer, 1/2, inv)}")
+
+
+
     else:
         launch_interface(printer)
 
