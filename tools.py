@@ -3,7 +3,7 @@ import numpy as np
 from copy import deepcopy
 from math import log, log10
 
-def PCTL(gram : gramPrintListener, iter : int, S0 : list, S1 : list,adv : dict = {}) -> dict:
+def PCTL(gram : gramPrintListener, iter : int, S0 : list, S1 : list, adv : dict = {}) -> dict:
     n_states = len(gram.states)
     n_ = n_states - len(S0) - len(S1)
     A = np.zeros([n_,n_])

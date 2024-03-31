@@ -31,6 +31,7 @@ class gramPrintListener(gramListener):
         self.choice = None
         self.states_decision = []
         self.states_non_dec = []
+        self.rewards = {}
         # La clé serait l'état dans lequel on est + le choix et la valeur associée : liste de tuples vers l'état d'arrivée et le poids associé
         pass
 
@@ -79,9 +80,22 @@ class gramPrintListener(gramListener):
         self.raiseErreur_DecisionMarkovien()
         self.raiseErreur_doublons()
 
-    def enterDefstates(self, ctx):
+    def enterStaterew(self, ctx):
         self.states = [str(x) for x in ctx.ID()]
         print(f"States : {self.states}")
+        rewards = [int(str(x)) for x in ctx.INT()]
+        self.rewards = dict(zip(self.states, rewards))
+        for state in self.states :
+            if state not in self.rewards.keys() :
+                self.rewards[state] = 0
+        print(f"Rewards : {self.rewards}")
+
+    def enterStatenorew(self, ctx):
+        self.states = [str(x) for x in ctx.ID()]
+        print(f"States : {self.states}")
+        rewards = [0 for x in ctx.ID()]
+        self.rewards = dict(zip(self.states, rewards))
+        print(f"Rewards : {self.rewards}")
 
     def enterDefactions(self, ctx):
         self.actions = [str(x) for x in ctx.ID()]
@@ -94,9 +108,6 @@ class gramPrintListener(gramListener):
         weights = [int(str(x)) for x in ctx.INT()]
         for i in range(len(ids)) :
             self.trans.append((dep,ids[i],weights[i],True, act)) #(depart,arrivée,weight,choice,action)
-        #print("Entrer dans Transact")
-        #print("Transition from " + dep + " with action "+ act + " and targets " + str(ids) + " with weights " + str(weights))
-        #print(self.trans)
 
     def enterTransnoact(self, ctx):
         ids = [str(x) for x in ctx.ID()]
@@ -151,7 +162,7 @@ class gramPrintListener(gramListener):
                         self.choice = action_choisie
                         return tuple[0]
     
-    def return_proba(self, S1,S2, action = None) -> float:
+    def return_proba(self, S1, S2, action = None) -> float:
         total_weight = sum(t[1] for t in self.possible_trans(S1) if t[-1] == action)
         for tran in self.trans:
             if tran[0] == S1 and tran[1] == S2 and tran[4] == action:
@@ -174,7 +185,7 @@ class gramPrintListener(gramListener):
                 choice = None
                 adv[state] = choice
                 while choices != None and choice not in choices:
-                    choice = input(f"Choisissez le choic pour votre adversaire à l'état {state} parmis les choix {set(choices)}.")
+                    choice = input(f"Choisissez le choix pour votre adversaire à l'état {state} parmis les choix {set(choices)}.")
                     adv[state] = choice
         return adv
     
@@ -185,7 +196,7 @@ class gramPrintListener(gramListener):
             new_adv = self.create_adv(is_random= True)
             for adv in liste_adv:
                 if adv == new_adv:
-                    is_in =True
+                    is_in = True
                     break
             if not is_in:
                 liste_adv.append(new_adv)
