@@ -94,23 +94,80 @@ def SPRT(p,eps,model : gramPrintListener,current_state ,target_state , adv ,nb_c
 
 def Qlearning(Tmax, model : gramPrintListener, gamma, alpha):
     #Initialize(Q0)
-    Q = {X : model.reward[X[0]] for X in model.states}
+    Q = {}
+    for state in model.states:
+        if model.possible_choices(state) != None:
+            for choix in model.possible_choices(state):
+                Q[(state,choix)] = model.rewards[state]
+        else:
+            Q[(state,None)] = model.rewards[state]
+    print(Q)
     for t in range(Tmax):
-        print(f"Liste action: {model.states}")
+        s = 0
+        a = 0
+        print(f"Liste action: {model.states} or -1 for end")
+        if s == -1:
+            return Q
         s = input()
+        while s not in model.states:
+            print(f"{s} n'est pas un état du modèle. Liste action: {model.states} or -1 for end")
+            if s == -1:
+                return Q
+            s = input()
+            
         if model.possible_choices(s) == None :
             a = None
         else:
-            print(f"Liste action: {set(model.possible_choices(s))}")
-            a = input()
+            while a not in set(model.possible_choices(s)):
+                print(f"Liste action: {set(model.possible_choices(s))}")
+                a = input()
         model.current_state = s
         s_ = model.etat_suivant(s,a)
-        r = model.reward[s_]
+        r = model.rewards[s_]
+        choices_possibles =  model.possible_choices(s_)
+        print(f"Vous avez atteint l'état {s_}, le gain est {r}." )
+        if choices_possibles == None:
+            choices_possibles = [None]
+        delta = r + gamma * max([Q[(s_,b)] for b in choices_possibles]) - Q[(s,a)]
+        Q[(s,a)] = Q[(s,a)] + alpha(t)* delta 
+        print(Q)
+    return Q
+
+def QlearningAuto(Tmax, model : gramPrintListener, gamma, alpha):
+    #Initialize(Q0)
+    Q = {}
+    apprentissage = {}
+    for state in model.states:
+        if model.possible_choices(state) != None:
+            for choix in model.possible_choices(state):
+                Q[(state,choix)] = model.rewards[state]
+                apprentissage[(state,choix)] = 0
+        else:
+            Q[(state,None)] = model.rewards[state]
+            apprentissage[(state,None)] = 0
+    print(Q)
+    s= model.states[0]
+
+    for t in range(Tmax):
+        ## CHOIX DE L'ACTION (on regarde l'action la moins choisie)
+        if model.possible_choices(s) == None :
+            a = None
+        else:
+            min_values = 100000
+            for (state, action), value in apprentissage.items():
+                if state == s and value < min_values:
+                    min_values = value
+                    a = action
+        apprentissage[(s,a)] += 1
+        model.current_state = s
+        s_ = model.etat_suivant(s,a)
+        r = model.rewards[s_]
         choices_possibles =  model.possible_choices(s_)
         if choices_possibles == None:
             choices_possibles = [None]
         delta = r + gamma * max([Q[(s_,b)] for b in choices_possibles]) - Q[(s,a)]
         Q[(s,a)] = Q[(s,a)] + alpha(t)* delta 
+        s = s_
     return Q
 
 def inv(k):
