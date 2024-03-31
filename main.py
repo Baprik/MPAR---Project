@@ -20,7 +20,7 @@ def main():
     printer.current_state = printer.states[0]
     print(printer.states)
     printer.raiseErreurs()
-    #print(printer.trans)
+    print(printer.rewards)
     
     print(best_adv_for_PCTL(printer, 10, ['S4'], [], 'S0'))
     #launch_interface(printer)
