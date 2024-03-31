@@ -19,10 +19,11 @@ def main(name, analyse):
     walker = ParseTreeWalker()
     walker.walk(printer, tree)
     printer.current_state = printer.states[0]
-    print(printer.states)
-    print(printer.trans)
+    #print(printer.trans)
     printer.raiseErreurs()
-    print(printer.rewards)
+    print(f"Rewards associés à chaque état : {printer.rewards}")
+    print(f"Espérance actuelle : {printer.esperance_iter}")
+    print
     if analyse:
         
         print(f"Le meilleur adversaire selon PCTL :{best_adv_for_PCTL(printer, 10, ['S4'], [], 'S0')}")
@@ -30,8 +31,6 @@ def main(name, analyse):
         #adv = printer.create_adv()
         #SPRT(0.2,0.1,printer,"S0" ,"S4" , adv ,10)
         print(f"Le Q obtenue est: {QlearningAuto(100, printer, 1/2, inv)}")
-
-
 
     else:
         launch_interface(printer)

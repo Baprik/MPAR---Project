@@ -32,6 +32,9 @@ class gramPrintListener(gramListener):
         self.states_decision = []
         self.states_non_dec = []
         self.rewards = {}
+        self.esperance_iter = 0
+        self.state_ini = None
+        self.trace = []
         # La clé serait l'état dans lequel on est + le choix et la valeur associée : liste de tuples vers l'état d'arrivée et le poids associé
         pass
 
@@ -89,6 +92,9 @@ class gramPrintListener(gramListener):
             if state not in self.rewards.keys() :
                 self.rewards[state] = 0
         print(f"Rewards : {self.rewards}")
+        self.state_ini = self.states[0]
+        self.esperance_iter = self.rewards[self.state_ini]
+        self.trace.append(self.states[0])
 
     def enterStatenorew(self, ctx):
         self.states = [str(x) for x in ctx.ID()]
@@ -145,7 +151,11 @@ class gramPrintListener(gramListener):
                 if x <= (weight/total_weight) :
                    self.previous_state = self.current_state
                    self.current_state = tuple[0]
+                   self.esperance_iter += self.rewards[tuple[0]]*(tuple[1]/total_weight)
                    #print(f"Etat actuel : {tuple[0]}")
+                   print(f"Espérance actuelle : {self.esperance_iter}")
+                   self.trace.append(tuple[0])
+                   print(f"Trace : {self.trace}")
                    return tuple[0]
         else :
             total_weight = sum(t[1] for t in self.possible_trans(state_ini) if t[-1] == action_choisie)
@@ -159,7 +169,11 @@ class gramPrintListener(gramListener):
                         self.previous_state = self.current_state
                         self.current_state = tuple[0]
                         #print(f"Etat actuel : {tuple[0]}")
+                        self.esperance_iter += self.rewards[tuple[0]]*(tuple[1]/total_weight)
                         self.choice = action_choisie
+                        print(f"Espérance actuelle : {self.esperance_iter}")
+                        self.trace.append(tuple[0])
+                        print(f"Trace : {self.trace}")
                         return tuple[0]
     
     def return_proba(self, S1, S2, action = None) -> float:
